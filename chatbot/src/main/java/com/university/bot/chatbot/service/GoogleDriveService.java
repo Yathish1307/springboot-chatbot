@@ -17,14 +17,20 @@ import java.util.List;
 public class GoogleDriveService {
     private static final String APPLICATION_NAME = "ChatbotApp";
     private static final String FOLDER_ID = "1vTVDaiN1iotd2Z0rh4PkFgX4szSXsUi2";
-    private static final String SERVICE_ACCOUNT_JSON = "src/main/resources/drive-service-account.json";
+    private static final String SERVICE_ACCOUNT_JSON = "/drive-service-account.json";
 
     private Drive driveService;
 
     public GoogleDriveService() {
         try {
-            GoogleCredential credential = GoogleCredential.fromStream(
-                new FileInputStream(SERVICE_ACCOUNT_JSON))
+            InputStream in = getClass().getResourceAsStream(SERVICE_ACCOUNT_JSON);
+            if (in == null) {
+                System.err.println("drive-service-account.json NOT FOUND in classpath!");
+                throw new RuntimeException("drive-service-account.json NOT FOUND in classpath!");
+            } else {
+                System.out.println("drive-service-account.json found in classpath.");
+            }
+            GoogleCredential credential = GoogleCredential.fromStream(in)
                 .createScoped(Collections.singleton("https://www.googleapis.com/auth/drive"));
             driveService = new Drive.Builder(
                 GoogleNetHttpTransport.newTrustedTransport(),
